@@ -18,7 +18,7 @@ public class CustomerItemProcessor implements ItemProcessor<Customer,Customer> {
         }
         return null;*/
 
-        log.info("Processing customer : {}",customer.getFirstName());
+        log.info("Processing customer : {} {}", customer.getFirstName() , customer.getLastName());
         return customer; //do process all customer
     }
 }
