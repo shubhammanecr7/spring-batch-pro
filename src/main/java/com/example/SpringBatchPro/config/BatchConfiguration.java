@@ -45,7 +45,7 @@ public class BatchConfiguration {
         reader.setResource(new FileSystemResource(inputFilePath)); //csv file path
         reader.setLinesToSkip(1);
         reader.setLineMapper(lineMapper());
-
+        log.info("Reader initialized with input file path {}",inputFilePath);
         return reader;
     }
 
@@ -78,12 +78,14 @@ public class BatchConfiguration {
         RepositoryItemWriter<Customer> writer = new RepositoryItemWriter<>();
         writer.setRepository(customerRepository);
         writer.setMethodName("save");
+        log.info("Writer confugured to use CustomerRepository.save");
         return writer;
     }
 
     //create step
     @Bean
     public Step step1(JobRepository jobRepository , PlatformTransactionManager transactionManager) {
+        log.info("Step 1 configuration started");
         return new StepBuilder("step1", jobRepository)
                 .<Customer, Customer>chunk(10, transactionManager)
                 .reader(reader())
@@ -93,7 +95,8 @@ public class BatchConfiguration {
                 .build();
     }
 
-    //for Async
+    //for Async execution
+    @Bean
     private TaskExecutor taskExecutor(){
         SimpleAsyncTaskExecutor asyncTaskExecutor = new SimpleAsyncTaskExecutor();
         asyncTaskExecutor.setConcurrencyLimit(10);
@@ -103,7 +106,7 @@ public class BatchConfiguration {
     //create job
     @Bean
     public Job job(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        log.info("** Job started now!!");
+        log.info("** Batch job configured");
         return new JobBuilder("importCustomerJob", jobRepository)
                 .flow(step1(jobRepository,transactionManager))
                 .end()
