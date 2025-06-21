@@ -2,6 +2,8 @@ package com.example.SpringBatchPro.config;
 
 import com.example.SpringBatchPro.entity.Customer;
 import com.example.SpringBatchPro.repository.CustomerRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -26,6 +28,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableBatchProcessing
 public class BatchConfiguration {
 
+    private static final Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
     @Value("${batch.inputFilePath}")
     private String inputFilePath;
     private final CustomerRepository customerRepository;
@@ -100,6 +103,7 @@ public class BatchConfiguration {
     //create job
     @Bean
     public Job job(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        log.info("** Job started now!!");
         return new JobBuilder("importCustomerJob", jobRepository)
                 .flow(step1(jobRepository,transactionManager))
                 .end()
