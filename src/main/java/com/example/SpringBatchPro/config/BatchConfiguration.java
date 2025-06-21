@@ -14,7 +14,7 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -26,15 +26,20 @@ import org.springframework.transaction.PlatformTransactionManager;
 @EnableBatchProcessing
 public class BatchConfiguration {
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    @Value("${batch.inputFilePath}")
+    private String inputFilePath;
+    private final CustomerRepository customerRepository;
+
+    public BatchConfiguration(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
 
     //create reader
     @Bean
     public FlatFileItemReader<Customer> reader() {
         FlatFileItemReader<Customer> reader = new FlatFileItemReader<Customer>();
         reader.setName("csv-reader");
-        reader.setResource(new FileSystemResource("src/main/resources/customers.csv"));
+        reader.setResource(new FileSystemResource(inputFilePath)); //csv file path
         reader.setLinesToSkip(1);
         reader.setLineMapper(lineMapper());
 
@@ -81,6 +86,7 @@ public class BatchConfiguration {
                 .reader(reader())
                 .processor(processor())
                 .writer(writer())
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
