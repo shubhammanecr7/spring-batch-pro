@@ -15,20 +15,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Customer {
     @Id
-    @Column(name = "CUSTOMER_ID")
+    @Column(name = "CUSTOMER_ID", nullable = false)
     private int id;
-    @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME", length = 50)
     private String firstName;
-    @Column(name = "LAST_NAME")
+    @Column(name = "LAST_NAME", length = 50)
     private String lastName;
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL", unique = true, length = 100)
     private String email;
-    @Column(name = "GENDER")
+    @Column(name = "GENDER", length = 12)
     private String gender;
-    @Column(name = "CONTACT")
+    @Column(name = "CONTACT", length = 12)
     private String contactNo;
-    @Column(name = "COUNTRY")
+    @Column(name = "COUNTRY", length = 50)
     private String country;
-    @Column(name = "DOB")
+    @Column(name = "DOB" , length = 30)
     private String dob;
 }

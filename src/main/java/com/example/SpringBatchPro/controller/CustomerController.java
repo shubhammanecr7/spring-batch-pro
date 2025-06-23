@@ -18,6 +18,10 @@ public class CustomerController {
     private Job job;
     private final static Logger log = LoggerFactory.getLogger(CustomerController.class);
 
+    @GetMapping
+    public String myMessage(){
+        return "BatchApp is UP. Use '/startBatch' now to start batch process";
+    }
     @GetMapping("/startBatch")
     public BatchStatus loadCsvDataToDB() throws Exception {
         JobParameters jobParameters = new JobParametersBuilder()
@@ -28,6 +32,4 @@ public class CustomerController {
         log.info("------------------Job started successfully!");
         return jobExecution.getStatus();
     }
-
-
 }
