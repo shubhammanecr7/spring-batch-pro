@@ -22,7 +22,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableBatchProcessing
@@ -105,11 +108,23 @@ public class BatchConfiguration {
 
     //create job
     @Bean
-    public Job job(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+    public Job job(JobRepository jobRepository, PlatformTransactionManager transactionManager,JdbcTemplate jdbcTemplate) {
         log.info("** Batch job configured");
         return new JobBuilder("importCustomerJob", jobRepository)
                 .flow(step1(jobRepository,transactionManager))
                 .end()
+                .listener(jobCompletionNotificationListener(jdbcTemplate))
                 .build();
+    }
+
+    //job completion notification listener
+    @Bean
+    public JobCompletionNotificationListener jobCompletionNotificationListener(JdbcTemplate jdbcTemplate){
+        return new JobCompletionNotificationListener(jdbcTemplate);
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource){
+        return new JdbcTemplate(dataSource);
     }
 }

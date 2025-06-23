@@ -25,9 +25,16 @@ public class JobCompletionNotificationListener implements JobExecutionListener {
             log.info("!! JOB FINISHED... Time to verify the results");
 
             jdbcTemplate
-                    .query("select id,firstName,lastName,email,gender,contactNo,country,dob" +
-                            "from customers_info",new DataClassRowMapper<>(Customer.class))
-                    .forEach(
+                    .query("""
+                            select customer_id,
+                                   first_name,
+                                   last_name,
+                                   email,
+                                   gender,
+                                   contact,
+                                   country,
+                                   dob from customer_info""" ,new DataClassRowMapper<>(Customer.class)
+                    ).forEach(
                             customer->
                                     log.info("Found <{}> in the database.",customer));
         }
